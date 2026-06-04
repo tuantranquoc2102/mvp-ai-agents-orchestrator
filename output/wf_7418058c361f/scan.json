@@ -1,0 +1,35 @@
+{
+  "kind": "feature_scope",
+  "path": "F:\\02_SPG_PROJECTS\\jarvis-api",
+  "feature_query": "/v4/charts/{premises_id}",
+  "file_count": 1,
+  "total_bytes": 5499,
+  "languages": {
+    "Go": 1
+  },
+  "files": [
+    "internal/app/v4/routes.go"
+  ],
+  "matched_files": [
+    {
+      "path": "internal/app/v4/routes.go",
+      "language": "Go",
+      "size_bytes": 5499,
+      "match_count": 1,
+      "match_lines": [
+        68
+      ],
+      "content_mode": "full",
+      "content": "// Package v4 contains all v4 handlers\npackage v4\n\nimport (\n\t\"code.in.spdigital.sg/sp-digital/golang/web.v2/middleware\"\n\t\"code.in.spdigital.sg/sp-digital/infinity/pkg/basiciam\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/app/v3/authc\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/app/v3/bp\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/app/v3/downtime\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/app/v4/account\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/app/v4/byob\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/app/v4/emailsubscription\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/app/v4/greengoals\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/app/v4/pledge\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/app/v4/smrd\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/app/v4/usage\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/app/v4/user\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/pkg/auth0\"\n\t\"code.in.spdigital.sg/sp-digital/jarvis-api/internal/pkg/handler\"\n\t\"github.com/go-chi/chi/v5\"\n)\n\n// Router registers handlers to the router provided in the argument\nfunc Router(r chi.Router) {\n\t// Middlewares\n\n\t// Grouped routes\n\tr.Group(external)\n\tr.Group(internal)\n}\n\n// external is the external chi.Router.Group routes\nfunc external(r chi.Router) {\n\t// Middlewares\n\tr.Use(downtime.Middleware())\n\tr.Use(middleware.LimitPayload(5 << (10 * 2))) //5MB\n\n\tr.Group(authenticated)\n\tr.Group(public)\n}\n\n// Deprecated: the function will be removed 3 months after moving behind mulesoft\n// authenticated is the authenticated chi.Router.Group\nfunc authenticated(r chi.Router) {\n\t// Authentication middleware\n\tr.Use(authc.Middleware(authc.Config{\n\t\tScope:   true,\n\t\tIDToken: true,\n\t}))\n\n\t// Routes\n\tauthenticatedRoutes(r)\n}\n\nfunc authenticatedRoutes(r chi.Router) {\n\t// Routes without details\n\t// TODO - remove this once mobile team has removed them\n\tr.Post(\"/v4/pledge/status\", handler.Wrap(pledge.RetrievePledgeStatus)) // Deprecated\n\t// ------------------------\n\t// Details-required routes\n\t// ------------------------\n\tr.Group(func(r chi.Router) {\n\t\t// BP details middleware\n\t\tr.Use(bp.DetailsByJWTMiddleware())\n\n\t\t// Routes\n\n\t\t// Charts\n\t\tr.Get(\"/v4/charts/{premises_id}\", handler.Wrap(usage.Charts))\n\t\tr.Get(\"/v4/greengoals/districts\", handler.Wrap(greengoals.DistrictsDynamic))\n\t\tr.Get(\"/v4/greengoals/targets\", handler.Wrap(greengoals.TargetsDynamic))\n\t\tr.Delete(\"/v4/greengoals/cache\", handler.Wrap(greengoals.InvalidateGreenGoalsCache))\n\n\t\t// SMRD\n\t\tr.Route(\"/v4/smrd\", func(r chi.Router) {\n\t\t\tr.Post(\"/\", handler.Wrap(smrd.Submit))\n\t\t})\n\t})\n}\n\n// public is the public chi.Router.Group routes\nfunc public(r chi.Router) {\n\t// Routes\n\tr.Post(\"/v4/email/subscription\", handler.Wrap(emailsubscription.Register))\n\tr.Get(\"/v4/public/greengoals/districts\", handler.Wrap(greengoals.DistrictsStatic))\n\tr.Get(\"/v4/public/greengoals/charts/district\", handler.Wrap(greengoals.GetDistrictConsumption))\n\tr.Get(\"/v4/public/greengoals/charts/country\", handler.Wrap(greengoals.GetNationalConsumption))\n\tr.Get(\"/v4/public/greengoals/targets\", handler.Wrap(greengoals.TargetsStatic))\n}\n\n// internal is the OAuth2 machine-to-machine chi.Router.Group\nfunc internal(r chi.Router) {\n\t// Middlewares\n\t// Access token middleware\n\tr.Use(basiciam.RequireAccessToken(auth0.JWKSKeyFunc))\n\t// Audience middleware\n\tr.Use(basiciam.RequireClaimAudience(auth0.AudM2M))\n\n\t// Routes\n\n\t// User\n\tr.Route(\"/v4/user\", func(r chi.Router) {\n\t\t// Retrieve IAM_ID from formdata\n\t\tr.Use(bp.DetailsByFormMiddleware())\n\n\t\t// Account details\n\t\tr.With(basiciam.RequireClaimScope(auth0.ScopeM2MReadAccount)).\n\t\t\tGet(\"/accounts\", handler.Wrap(user.RetrieveAccounts))\n\n\t\t// Chart\n\t\tr.With(basiciam.RequireClaimScope(auth0.ScopeM2MReadChart)).\n\t\t\tGet(\"/charts/{premises_id}\", handler.Wrap(usage.Charts))\n\t})\n\n\t// Njord Billing\n\tr.Route(\"/v4/accounts\", func(r chi.Router) {\n\t\tr.Use(basiciam.RequireClaimScope(auth0.ScopeM2MReadAccount))\n\n\t\tr.Get(\"/all\", handler.Wrap(account.RetrieveAccountsByIAM))\n\t\tr.Get(\"/outstanding\", handler.Wrap(account.OutstandingBySystem))\n\t})\n\n\t// BYOB\n\tr.Route(\"/v4/byob\", func(r chi.Router) {\n\t\t// Temporarily use GraphQL scope to protect BYOB admin routes\n\t\t// TODO: Create appropriate scope/permissions on Auth0\n\t\tr.Use(basiciam.RequireClaimScope(auth0.ScopeM2MReadGraphQL))\n\n\t\tr.Get(\"/redemptions/report\", handler.Wrap(byob.GenerateRedemptionReport))\n\t})\n}\n\n// GatewayAuthenticatedRoutes is the gateway routes behind b2c mulesoft\nfunc GatewayAuthenticatedRoutes(r chi.Router) {\n\t// Middlewares\n\tr.Use(downtime.Middleware())\n\tr.Use(middleware.LimitPayload(5 << (10 * 2))) //5MB\n\n\t// Parse JWTClaims from SecurityContext and store in Context\n\tr.Use(authc.JWTClaimsSecurityContextMiddleware())\n\n\t// Scope middleware\n\tr.Use(auth0.MulesoftRequireScopesOrMatcherMiddleware(auth0.ScopeUtilities, auth0.ScopeRBAC))\n\tr.Use(auth0.MulesoftRequireScope(auth0.ScopeInfinity))\n\t// Routes\n\tauthenticatedRoutes(r)\n}\n\n// GatewayPublicRoutes is the gateway public routes behind heimdall-public mulesoft\nfunc GatewayPublicRoutes(r chi.Router) {\n\t// Middlewares\n\tr.Use(downtime.Middleware())\n\tr.Use(middleware.LimitPayload(5 << (10 * 2))) //5MB\n\n\tr.Group(public)\n\tr.Group(func(r chi.Router) {\n\t\tr.Post(\"/v4/smrd/anonymous/submit\", handler.Wrap(smrd.SubmitAnonymously))\n\t})\n}\n"
+    }
+  ],
+  "truncated": false,
+  "scope_params": {
+    "max_files": 30,
+    "full_content_kb": 30,
+    "context_lines": 8,
+    "max_matches_per_file": 12,
+    "extra_skip_dirs": [],
+    "include_non_source": false
+  }
+}

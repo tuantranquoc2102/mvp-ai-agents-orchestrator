@@ -1,0 +1,58 @@
+# Diagram
+
+_Agent: `architect` (Software Architect)_  
+_Status: `success` · attempts: 1_
+
+---
+
+```mermaid
+flowchart TD
+    Client[Mobile or Web Client]
+    Route["GET /v4/charts/{premises_id}<br/>routes.go"]
+    Downtime[downtime.Middleware<br/>service availability check]
+    Payload[middleware.LimitPayload<br/>5MB cap]
+    Authc["authc.Middleware<br/>JWT + Scope + IDToken"]
+    Auth0[(Auth0 / IAM<br/>identity provider)]
+    BPMW["bp.DetailsByJWTMiddleware<br/>resolve user BP details"]
+    BPCache[(BP Cache<br/>bp/cache.go)]
+    BPLoad["bp.Load / bp.Retrieve<br/>fetch BP if cache miss"]
+    BPAPI[(SP Backend<br/>BP details service)]
+    CtxBP["request context<br/>enriched with BP and premises"]
+    Handler["usage.Charts handler<br/>v4/usage/charts.go"]
+    ValidatePID{"premises_id<br/>belongs to user BP?"}
+    Forbidden[/Return 403 or 404/]
+    AMIClient["ami.Charts builder<br/>v3/ami/charts.go"]
+    AMI[(AMI / Meter Data<br/>upstream service)]
+    Shape["charts_response<br/>shape and aggregate intervals"]
+    Resp[/200 JSON chart payload/]
+    ErrUpstream[/5xx error response/]
+
+    Client -->|HTTPS request| Route
+    Route --> Downtime
+    Downtime -->|service up| Payload
+    Downtime -->|down| ErrUpstream
+    Payload --> Authc
+    Authc -->|validate token| Auth0
+    Auth0 -->|claims| Authc
+    Authc -->|unauthorized| Forbidden
+    Authc -->|authenticated| BPMW
+    BPMW -->|lookup by JWT sub| BPCache
+    BPCache -->|hit| CtxBP
+    BPCache -->|miss| BPLoad
+    BPLoad -->|fetch| BPAPI
+    BPAPI -->|BP and premises list| BPLoad
+    BPLoad -->|store| BPCache
+    BPLoad --> CtxBP
+    CtxBP --> Handler
+    Handler --> ValidatePID
+    ValidatePID -->|no| Forbidden
+    ValidatePID -->|yes| AMIClient
+    AMIClient -->|interval and meter query| AMI
+    AMI -->|raw meter readings| AMIClient
+    AMIClient --> Shape
+    Shape -->|success| Resp
+    Shape -->|upstream failure| ErrUpstream
+    Resp --> Client
+    Forbidden --> Client
+    ErrUpstream --> Client
+```

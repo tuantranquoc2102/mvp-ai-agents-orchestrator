@@ -1,0 +1,20 @@
+{
+  "kind": "directory",
+  "path": "F:\\03_POC_PROJECTS\\claude\\agent_orchestrator",
+  "file_count": 8,
+  "total_bytes": 38005,
+  "languages": {
+    "Python": 8
+  },
+  "files": [
+    "__init__.py",
+    "agents.py",
+    "checkpoint.py",
+    "core.py",
+    "models.py",
+    "runner.py",
+    "tools.py",
+    "workflows.py"
+  ],
+  "truncated": false
+}

@@ -1,0 +1,72 @@
+# Diagram
+
+_Agent: `architect` (Software Architect)_  
+_Status: `success` · attempts: 1_
+
+---
+
+```mermaid
+flowchart TD
+    Client[Mobile or Web Client]
+    M2M[OAuth2 M2M Service]
+    Router[Chi Router v4]
+    Downtime[Downtime Middleware]
+    LimitPayload[Payload Limit 5MB]
+    AuthC[Auth0 JWT Middleware]
+    BasicIAM[BasicIAM Access Token]
+    Audience[Audience Claim Check]
+    ScopeChart[Scope ReadChart Check]
+    BPDetailsJWT[BP Details by JWT]
+    BPDetailsForm[BP Details by Form]
+    ChartsHandler[usage.Charts Handler]
+    PremisesParam{premises_id path param}
+    PremisesCfg[(premises_configs)]
+    AmiMeter[(ami_meter)]
+    AmiMeterSmmu[(ami_meter_smmu)]
+    AmiMeterDemo[(ami_meter_demo)]
+    AmiElec[(ami_interval_elec)]
+    AmiGas[(ami_interval_gas)]
+    AmiWater[(ami_interval_water)]
+    ChartBuilder[Chart Data Builder]
+    Response[JSON Chart Response]
+    Kafka[Kafka Publisher]
+
+    Client -->|GET v4 charts external| Router
+    M2M -->|GET v4 user charts internal| Router
+
+    Router -->|external group| Downtime
+    Downtime --> LimitPayload
+    LimitPayload --> AuthC
+    AuthC -->|valid JWT| BPDetailsJWT
+
+    Router -->|internal group| BasicIAM
+    BasicIAM --> Audience
+    Audience --> ScopeChart
+    ScopeChart --> BPDetailsForm
+
+    BPDetailsJWT -->|BP attached to ctx| ChartsHandler
+    BPDetailsForm -->|BP from formdata| ChartsHandler
+
+    ChartsHandler --> PremisesParam
+    PremisesParam -->|lookup config| PremisesCfg
+    PremisesCfg -->|meter mapping| AmiMeter
+    AmiMeter -->|select datasource| Decide{Meter Type}
+    Decide -->|SMMU| AmiMeterSmmu
+    Decide -->|Demo| AmiMeterDemo
+    Decide -->|Standard| ChartBuilder
+
+    AmiMeterSmmu --> AmiElec
+    AmiMeterDemo --> AmiElec
+    AmiMeter -->|electricity| AmiElec
+    AmiMeter -->|gas| AmiGas
+    AmiMeter -->|water| AmiWater
+
+    AmiElec --> ChartBuilder
+    AmiGas --> ChartBuilder
+    AmiWater --> ChartBuilder
+
+    ChartBuilder -->|aggregate intervals| Response
+    Response -->|return to caller| Client
+    Response -->|return to caller| M2M
+    ChartsHandler -.->|audit or usage event| Kafka
+```

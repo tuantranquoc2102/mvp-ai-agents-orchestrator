@@ -1,0 +1,55 @@
+flowchart TD
+    Caller([Caller / Client])
+    Facade[__init__.py<br/>Public API Facade]
+    Orchestrator[core.Orchestrator<br/>submit / resume]
+    WFRegistry[(workflows.py<br/>WORKFLOW_REGISTRY<br/>templates)]
+    Checkpoint[(checkpoint.py<br/>CheckpointStore<br/>JSON files)]
+    Runner[runner.run_step<br/>retry loop]
+    AgentRegistry[(agents.py<br/>AGENT_REGISTRY)]
+    Agent[Agent.execute<br/>dispatcher]
+    MockExec[Mock Executor]
+    ClaudeExec[claude_code_executor]
+    ClaudeCLI[[claude CLI<br/>subprocess]]
+    ToolRegistry[(tools.py<br/>TOOL_REGISTRY)]
+    PermGate{Permission<br/>allowed?}
+    ToolImpl[Tool Implementation]
+    Models[(models.py<br/>Workflow / Step<br/>shared context dict)]
+
+    Caller -->|submit request_type, payload| Facade
+    Facade --> Orchestrator
+    Orchestrator -->|get_workflow_template| WFRegistry
+    WFRegistry -->|template steps| Orchestrator
+    Orchestrator -->|build Workflow| Models
+    Orchestrator -->|save / load JSON| Checkpoint
+    Checkpoint -->|hydrated Workflow| Orchestrator
+
+    Orchestrator -->|sequential for each step| StepLoop{More steps?}
+    StepLoop -->|yes| Runner
+    StepLoop -->|no| Done([Workflow COMPLETED])
+
+    Runner -->|lookup agent| AgentRegistry
+    AgentRegistry --> Agent
+    Runner -->|resolve inputs_from| Models
+
+    Agent -->|mock mode| MockExec
+    Agent -->|real mode| ClaudeExec
+    ClaudeExec -->|subprocess.run --print| ClaudeCLI
+    ClaudeCLI -->|stdout / timeout 300s| ClaudeExec
+    MockExec -->|outputs dict| Runner
+    ClaudeExec -->|outputs dict| Runner
+
+    Runner -->|invoke_tool name, kwargs| ToolRegistry
+    ToolRegistry --> PermGate
+    PermGate -->|denied| ToolErr[PermissionError]
+    PermGate -->|allowed| ToolImpl
+    ToolImpl -->|result| Runner
+
+    Runner -->|write step.output<br/>mutate Step in place| Models
+    Models -->|workflow.context&#91;step.name&#93;| StepLoop
+
+    Runner -->|on failure| Retry{retries left?}
+    Retry -->|yes| Runner
+    Retry -->|no| Failed([Step FAILED])
+
+    Runner -->|after each step| Checkpoint
+    Failed -->|resume rewinds<br/>to first non-terminal| Orchestrator
