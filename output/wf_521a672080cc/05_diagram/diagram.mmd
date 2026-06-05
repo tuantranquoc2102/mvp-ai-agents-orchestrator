@@ -1,0 +1,22 @@
+flowchart TD
+    Request[/GET /admin/customer<br/>bpNo, userId/] --> Controller[AdminController.getCustomer]
+    Controller --> ServiceCall[adminService.getCustomer<br/>bpNo, userId]
+    ServiceCall --> CheckParams{bpNo and userId<br/>both provided?}
+    CheckParams -->|missing params| Resp400[/400 Bad Request/]
+    CheckParams -->|valid| InvokeSAP[Call SAP CustomerDetailsRetrieval]
+    InvokeSAP --> SAPEndpoint[SAP API<br/>/CustomerDetailsRetrieval]
+    SAPEndpoint --> SAPResult{SAP response<br/>status?}
+    SAPResult -->|error response| Resp5xx[/5xx Error Response/]
+    SAPResult -->|success| CustomerType{Customer<br/>type?}
+    CustomerType -->|MSSL customer| MSSLCall[Call SAP MSSLCustomerDetailsRetrieval]
+    CustomerType -->|EBS customer| ProfileCall[Call SAP CustomerProfileRetrieval]
+    MSSLCall --> MSSLEndpoint[SAP API<br/>/MSSLCustomerDetailsRetrieval]
+    ProfileCall --> ProfileEndpoint[SAP API<br/>/CustomerProfileRetrieval]
+    MSSLEndpoint --> FetchUser[Fetch user by userId]
+    ProfileEndpoint --> FetchUser
+    FetchUser --> UserStore[(External: Users DB)]
+    UserStore --> UserFound{User<br/>found?}
+    UserFound -->|not found| Resp404[/404 User Not Found/]
+    UserFound -->|found| MaskData[Apply MaskingUtil<br/>to sensitive fields]
+    MaskData --> Aggregate[Build GetCustomerResponse<br/>SAP data + user data]
+    Aggregate --> Resp200[/200 GetCustomerResponse JSON/]

@@ -1,0 +1,44 @@
+flowchart TD
+    Req[/HTTP Request to ChartController/] --> Router{Which endpoint?}
+
+    Router -->|POST monthly| Monthly[ChartController.monthly<br/>ServerWebExchange + MDHChartRequest]
+    Router -->|POST daily| Daily[ChartController.daily<br/>ServerWebExchange + DailySKRequest]
+    Router -->|POST hourly| Hourly[ChartController.hourly<br/>ServerWebExchange + HourlySKRequest]
+    Router -->|POST bill-explainer| Bill[ChartController.billExplainer<br/>ServerWebExchange + BillExplainer.SK.Request]
+
+    Monthly --> SvcMonthly[ChartService.retrieveMonthly]
+    Daily --> MapDaily[BDLChart.Daily.Request.getDailyRequestForGraph<br/>map SK to BDL request]
+    MapDaily --> SvcDaily[ChartService.retrieveDaily]
+    Hourly --> MapHourly[BDLChart.Hourly.Request.getHourlyRequestForGraph<br/>map SK to BDL request]
+    MapHourly --> SvcHourly[ChartService.retrieveHourly]
+    Bill --> SvcBill[ChartService.retrieveBillExplainer]
+
+    SvcMonthly --> JarvisMonthly[Jarvis Chart API<br/>monthly MDH endpoint]
+    JarvisMonthly --> JarvisMonthlyCheck{Jarvis call OK?}
+    JarvisMonthlyCheck -->|success| MonthlyResp[/200 MDHChartResponse<br/>premiseType + monthly data/]
+    JarvisMonthlyCheck -->|failure| MonthlyErr[/ChartApiException<br/>CHART_MONTHLY_JARVIS_ERROR/]
+
+    SvcDaily --> JarvisDaily[Jarvis Chart API<br/>daily BDL endpoint]
+    JarvisDaily --> JarvisDailyCheck{Jarvis call OK?}
+    JarvisDailyCheck -->|success| DailyResp[/200 BDLChart Daily Response/]
+    JarvisDailyCheck -->|failure| DailyErr[/ChartApiException<br/>CHART_DAILY_JARVIS_ERROR/]
+
+    SvcHourly --> JarvisHourly[Jarvis Chart API<br/>hourly BDL endpoint]
+    JarvisHourly --> JarvisHourlyCheck{Jarvis call OK?}
+    JarvisHourlyCheck -->|success| HourlyResp[/200 BDLChart Hourly Response/]
+    JarvisHourlyCheck -->|failure| HourlyErr[/ChartApiException<br/>CHART_HOURLY_JARVIS_ERROR/]
+
+    SvcBill --> TariffLookup[(Redis: TariffRepository<br/>lookup tariff data)]
+    TariffLookup --> TariffCheck{Tariff cache hit?}
+    TariffCheck -->|miss| SchedulerLoad[TariffScheduler refresh<br/>load latest tariff]
+    SchedulerLoad --> SapCall[SAP Backend API<br/>via SAPService]
+    TariffCheck -->|hit| SapCall
+    SapCall --> SapCheck{SAP returned data?}
+    SapCheck -->|success| BillResp[/200 BillExplainer Response/]
+    SapCheck -->|failure| BillErr[/ChartApiException<br/>BILL_EXPLAINER_ERROR/]
+
+    MonthlyErr --> ErrHandler[Reactive error handler<br/>onErrorResume]
+    DailyErr --> ErrHandler
+    HourlyErr --> ErrHandler
+    BillErr --> ErrHandler
+    ErrHandler --> Resp5xx[/5xx error JSON response/]
