@@ -1,4 +1,4 @@
-"""End-to-end demo of the agent_orchestrator MVP.
+"""End-to-end demo of the orchestrator MVP.
 
 Run it twice:
     python demo.py            # first run: feature_development fails mid-flow
@@ -19,14 +19,14 @@ import json
 import sys
 from pathlib import Path
 
-from agent_orchestrator import (
-    AGENT_REGISTRY,
+from src.agents import AGENT_REGISTRY
+from src.persistence import FileCheckpointStore
+from src.workflow import (
     Orchestrator,
     StepStatus,
     TOOL_REGISTRY,
     WORKFLOW_REGISTRY,
 )
-from agent_orchestrator.checkpoint import FileCheckpointStore
 
 
 LAST_WF_FILE = Path(".last_workflow_id")
@@ -143,7 +143,7 @@ def cmd_run() -> None:
 
     # ---- Scenario C: permission denied (declarative check) ----
     banner("RUN C — permission denied for reviewer trying to write code")
-    from agent_orchestrator.tools import PermissionDenied, check_permission
+    from src.workflow.tools import PermissionDenied, check_permission
 
     reviewer = AGENT_REGISTRY["reviewer"]
     try:

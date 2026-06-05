@@ -1,0 +1,25 @@
+flowchart TD
+    Request[/HTTP GET /admin/customer<br/>params: bpNo, userId/] --> Controller[AdminController.getCustomer]
+    Controller --> LogStart[Log: getCustomerDetails Start]
+    LogStart --> ServiceCall[adminService.getCustomer<br/>bpNo, userId]
+    ServiceCall --> ValidateParams{bpNo and userId<br/>present?}
+    ValidateParams -->|missing| Err400[/400 Bad Request/]
+    ValidateParams -->|present| SAPCall[SAP API<br/>CUSTOMER_PROFILE_RETRIEVAL<br/>/CustomerProfileRetrieval]
+    SAPCall --> SAPResult{SAP response<br/>status?}
+    SAPResult -->|error| MapError{Error type?}
+    MapError -->|not found| Err404[/404 Not Found/]
+    MapError -->|upstream failure| Err502[/502 Bad Gateway/]
+    MapError -->|other| Err500[/500 Internal Server Error/]
+    SAPResult -->|success| CustomerType{Customer type?}
+    CustomerType -->|EBS| EBSPath[Use EBS_CUSTOMER_DETAILS_RETRIEVAL<br/>/CustomerDetailsRetrieval]
+    CustomerType -->|MSSL| MSSLPath[Use MSSL_CUSTOMER_DETAILS_RETRIEVAL<br/>/MSSLCustomerDetailsRetrieval]
+    EBSPath --> SAPDetails[(External: SAP Backend)]
+    MSSLPath --> SAPDetails
+    SAPDetails --> SubscriptionLookup[Retrieve subscription preferences]
+    SubscriptionLookup --> HasSubscription{Subscription<br/>found?}
+    HasSubscription -->|yes| MergeSubs[Merge subscription data<br/>into customer profile]
+    HasSubscription -->|no| SkipSubs[Skip subscription merge]
+    MergeSubs --> MaskingStep[Apply MaskingUtil<br/>to sensitive fields]
+    SkipSubs --> MaskingStep
+    MaskingStep --> BuildResponse[Build GetCustomerResponse DTO]
+    BuildResponse --> Resp200[/200 JSON GetCustomerResponse/]
