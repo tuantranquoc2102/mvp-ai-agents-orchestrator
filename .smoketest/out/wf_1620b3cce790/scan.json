@@ -1,0 +1,13 @@
+{
+  "kind": "directory",
+  "path": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo",
+  "file_count": 1,
+  "total_bytes": 10,
+  "languages": {
+    "Markdown": 1
+  },
+  "files": [
+    "README.md"
+  ],
+  "truncated": false
+}

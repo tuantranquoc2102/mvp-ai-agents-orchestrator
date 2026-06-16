@@ -1,0 +1,14 @@
+{
+  "kind": "directory",
+  "path": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo",
+  "file_count": 2,
+  "total_bytes": 265,
+  "languages": {
+    "Markdown": 2
+  },
+  "files": [
+    "README.md",
+    "docs\\changes\\2026-06-05-add-csv-export-to-reports-page.md"
+  ],
+  "truncated": false
+}

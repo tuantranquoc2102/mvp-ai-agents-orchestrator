@@ -5,5 +5,5 @@ AGENT = register_agent(Agent(
     name="architect",
     role="Software Architect",
     description="Defines technical architecture, components, and interfaces.",
-    allowed_tools=["read_doc", "write_doc", "read_code"],
+    allowed_tools=["read_doc", "write_doc", "read_code", "write_rationale"],
 ))

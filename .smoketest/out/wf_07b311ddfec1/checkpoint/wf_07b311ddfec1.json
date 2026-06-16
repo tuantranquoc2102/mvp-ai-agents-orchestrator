@@ -1,0 +1,656 @@
+{
+  "id": "wf_07b311ddfec1",
+  "request_type": "feature_development",
+  "request_payload": {
+    "task_type": "migration",
+    "source_dir": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo",
+    "branch_name": "migration/migrate-auth-from-node-service-to-go",
+    "jira_id": null,
+    "is_migration": true
+  },
+  "steps": [
+    {
+      "id": "step_fee979ebd2b0",
+      "name": "intake",
+      "agent": "ba",
+      "tool": null,
+      "instruction": "Read the task brief in `task_brief`. Restate it as a tight problem statement: goal, in-scope, out-of-scope, acceptance criteria. If the brief came from a Jira ticket, preserve the ticket id.",
+      "inputs": {
+        "task_brief": {
+          "description": "Migrate auth from Node service to Go",
+          "jira_id": null,
+          "source_dir": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo",
+          "task_type": "migration",
+          "migrate_from": "node-auth",
+          "migrate_to": "go-auth",
+          "branch_name": "migration/migrate-auth-from-node-service-to-go",
+          "slug": "migrate-auth-from-node-service-to-go",
+          "submitted_at": "2026-06-05T04:49:51+00:00"
+        }
+      },
+      "output": {
+        "agent_output": {
+          "agent": "ba",
+          "role": "Business Analyst",
+          "summary": "[mock] You are the Business Analyst (ba) in a multi-agent workflow.\n[mock] task: Read the task brief in `task_brief`. Restate it as a tight problem statement: goal, in-scope, out-of-scope, acceptance criteria. If the brief came from a Jira t",
+          "model": "mock"
+        },
+        "tool_output": null
+      },
+      "status": "success",
+      "attempts": 1,
+      "max_retries": 2,
+      "retry_backoff_sec": 0.5,
+      "error": null,
+      "started_at": "2026-06-05T04:49:51.105043+00:00",
+      "finished_at": "2026-06-05T04:49:51.105043+00:00"
+    },
+    {
+      "id": "step_6d25b0cfbd6b",
+      "name": "scope",
+      "agent": "sa",
+      "tool": null,
+      "instruction": "Using the intake summary and the `source_scan` snapshot of the target repository, list the files / modules / services this change is likely to touch. Group them by layer (api / service / repo / ui / config). Flag anything that looks risky.",
+      "inputs": {
+        "intake": {
+          "agent_output": {
+            "agent": "ba",
+            "role": "Business Analyst",
+            "summary": "[mock] You are the Business Analyst (ba) in a multi-agent workflow.\n[mock] task: Read the task brief in `task_brief`. Restate it as a tight problem statement: goal, in-scope, out-of-scope, acceptance criteria. If the brief came from a Jira t",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "source_scan": {
+          "kind": "directory",
+          "path": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo",
+          "file_count": 2,
+          "total_bytes": 265,
+          "languages": {
+            "Markdown": 2
+          },
+          "files": [
+            "README.md",
+            "docs\\changes\\2026-06-05-add-csv-export-to-reports-page.md"
+          ],
+          "truncated": false
+        }
+      },
+      "output": {
+        "agent_output": {
+          "agent": "sa",
+          "role": "Solution Architect",
+          "summary": "[mock] You are the Solution Architect (sa) in a multi-agent workflow.\n[mock] task: Using the intake summary and the `source_scan` snapshot of the target repository, list the files / modules / services this change is likely to touch. Group them",
+          "model": "mock"
+        },
+        "tool_output": null
+      },
+      "status": "success",
+      "attempts": 1,
+      "max_retries": 2,
+      "retry_backoff_sec": 0.5,
+      "error": null,
+      "started_at": "2026-06-05T04:49:51.105043+00:00",
+      "finished_at": "2026-06-05T04:49:51.105043+00:00"
+    },
+    {
+      "id": "step_9e190b26527e",
+      "name": "branch",
+      "agent": "pm",
+      "tool": "git_branch",
+      "instruction": "Create a feature branch in the source repo. Name it from the task slug, prefixed by the task_type (feature/, migration/, bugfix/). The tool handles the actual `git checkout -b`.",
+      "inputs": {
+        "source_dir": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo",
+        "branch_name": "migration/migrate-auth-from-node-service-to-go",
+        "intake": {
+          "agent_output": {
+            "agent": "ba",
+            "role": "Business Analyst",
+            "summary": "[mock] You are the Business Analyst (ba) in a multi-agent workflow.\n[mock] task: Read the task brief in `task_brief`. Restate it as a tight problem statement: goal, in-scope, out-of-scope, acceptance criteria. If the brief came from a Jira t",
+            "model": "mock"
+          },
+          "tool_output": null
+        }
+      },
+      "output": {
+        "agent_output": {
+          "agent": "pm",
+          "role": "Project Manager",
+          "summary": "[mock] You are the Project Manager (pm) in a multi-agent workflow.\n[mock] task: Create a feature branch in the source repo. Name it from the task slug, prefixed by the task_type (feature/, migration/, bugfix/). The tool handles the actual `",
+          "model": "mock"
+        },
+        "tool_output": {
+          "tool": "git_branch",
+          "source_dir": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo",
+          "branch": "migration/migrate-auth-from-node-service-to-go",
+          "base_branch": "(current HEAD)",
+          "action": "created",
+          "head_commit": "6337af227ca77de6bea7a16ad15c4a38e16b1c3d"
+        }
+      },
+      "status": "success",
+      "attempts": 1,
+      "max_retries": 2,
+      "retry_backoff_sec": 0.5,
+      "error": null,
+      "started_at": "2026-06-05T04:49:51.105043+00:00",
+      "finished_at": "2026-06-05T04:49:51.218134+00:00"
+    },
+    {
+      "id": "step_edbe3f2e5911",
+      "name": "rationale",
+      "agent": "architect",
+      "tool": "write_rationale",
+      "instruction": "Draft the change-rationale document that will live at `docs/changes/<date>-<slug>.md` in the source repo. Sections required: 1) Why \u2014 business + technical motivation; 2) What changes \u2014 scope summary; 3) Out of scope; 4) Acceptance criteria; 5) Logic-parity checklist \u2014 REQUIRED when migrating between services / languages / frameworks: list each behavior of the source side and the equivalent on the target side, with an explicit 'preserved / changed / deprecated' marker.",
+      "inputs": {
+        "source_dir": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo",
+        "slug": "migrate-auth-from-node-service-to-go",
+        "date": "2026-06-05",
+        "content": "",
+        "intake": {
+          "agent_output": {
+            "agent": "ba",
+            "role": "Business Analyst",
+            "summary": "[mock] You are the Business Analyst (ba) in a multi-agent workflow.\n[mock] task: Read the task brief in `task_brief`. Restate it as a tight problem statement: goal, in-scope, out-of-scope, acceptance criteria. If the brief came from a Jira t",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "scope": {
+          "agent_output": {
+            "agent": "sa",
+            "role": "Solution Architect",
+            "summary": "[mock] You are the Solution Architect (sa) in a multi-agent workflow.\n[mock] task: Using the intake summary and the `source_scan` snapshot of the target repository, list the files / modules / services this change is likely to touch. Group them",
+            "model": "mock"
+          },
+          "tool_output": null
+        }
+      },
+      "output": {
+        "agent_output": {
+          "agent": "architect",
+          "role": "Software Architect",
+          "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Draft the change-rationale document that will live at `docs/changes/<date>-<slug>.md` in the source repo. Sections required: 1) Why \u2014 business + technical motiv",
+          "model": "mock"
+        },
+        "tool_output": {
+          "tool": "write_rationale",
+          "path": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo\\docs\\changes\\2026-06-05-migrate-auth-from-node-service-to-go.md",
+          "bytes_written": 95
+        }
+      },
+      "status": "success",
+      "attempts": 1,
+      "max_retries": 2,
+      "retry_backoff_sec": 0.5,
+      "error": null,
+      "started_at": "2026-06-05T04:49:51.218134+00:00",
+      "finished_at": "2026-06-05T04:49:51.222530+00:00"
+    },
+    {
+      "id": "step_ea0dc4d707e5",
+      "name": "architecture",
+      "agent": "architect",
+      "tool": null,
+      "instruction": "Lay out the technical approach: data model touches, API contracts, sequence of operations, error handling. Reference concrete file paths from the scope. Keep it implementable, not aspirational.",
+      "inputs": {
+        "intake": {
+          "agent_output": {
+            "agent": "ba",
+            "role": "Business Analyst",
+            "summary": "[mock] You are the Business Analyst (ba) in a multi-agent workflow.\n[mock] task: Read the task brief in `task_brief`. Restate it as a tight problem statement: goal, in-scope, out-of-scope, acceptance criteria. If the brief came from a Jira t",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "scope": {
+          "agent_output": {
+            "agent": "sa",
+            "role": "Solution Architect",
+            "summary": "[mock] You are the Solution Architect (sa) in a multi-agent workflow.\n[mock] task: Using the intake summary and the `source_scan` snapshot of the target repository, list the files / modules / services this change is likely to touch. Group them",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "rationale": {
+          "agent_output": {
+            "agent": "architect",
+            "role": "Software Architect",
+            "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Draft the change-rationale document that will live at `docs/changes/<date>-<slug>.md` in the source repo. Sections required: 1) Why \u2014 business + technical motiv",
+            "model": "mock"
+          },
+          "tool_output": {
+            "tool": "write_rationale",
+            "path": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo\\docs\\changes\\2026-06-05-migrate-auth-from-node-service-to-go.md",
+            "bytes_written": 95
+          }
+        }
+      },
+      "output": {
+        "agent_output": {
+          "agent": "architect",
+          "role": "Software Architect",
+          "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Lay out the technical approach: data model touches, API contracts, sequence of operations, error handling. Reference concrete file paths from the scope. Keep it",
+          "model": "mock"
+        },
+        "tool_output": null
+      },
+      "status": "success",
+      "attempts": 1,
+      "max_retries": 2,
+      "retry_backoff_sec": 0.5,
+      "error": null,
+      "started_at": "2026-06-05T04:49:51.222530+00:00",
+      "finished_at": "2026-06-05T04:49:51.222530+00:00"
+    },
+    {
+      "id": "step_48652750f157",
+      "name": "backend_plan",
+      "agent": "be_dev",
+      "tool": null,
+      "instruction": "Produce a backend implementation plan: list of files to create / modify, function signatures, db migrations, external calls. Do NOT write code \u2014 produce the plan a developer will execute on the feature branch.",
+      "inputs": {
+        "architecture": {
+          "agent_output": {
+            "agent": "architect",
+            "role": "Software Architect",
+            "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Lay out the technical approach: data model touches, API contracts, sequence of operations, error handling. Reference concrete file paths from the scope. Keep it",
+            "model": "mock"
+          },
+          "tool_output": null
+        }
+      },
+      "output": {
+        "agent_output": {
+          "agent": "be_dev",
+          "role": "Backend Developer",
+          "summary": "[mock] You are the Backend Developer (be_dev) in a multi-agent workflow.\n[mock] task: Produce a backend implementation plan: list of files to create / modify, function signatures, db migrations, external calls. Do NOT write code \u2014 produce the pla",
+          "model": "mock"
+        },
+        "tool_output": null
+      },
+      "status": "success",
+      "attempts": 1,
+      "max_retries": 2,
+      "retry_backoff_sec": 0.5,
+      "error": null,
+      "started_at": "2026-06-05T04:49:51.222530+00:00",
+      "finished_at": "2026-06-05T04:49:51.222530+00:00"
+    },
+    {
+      "id": "step_e91479162b28",
+      "name": "frontend_plan",
+      "agent": "fe_dev",
+      "tool": null,
+      "instruction": "Produce a frontend implementation plan: components, state, API calls, routing, copy. List files to create / modify. Do NOT write code \u2014 produce the plan a developer will execute on the feature branch.",
+      "inputs": {
+        "architecture": {
+          "agent_output": {
+            "agent": "architect",
+            "role": "Software Architect",
+            "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Lay out the technical approach: data model touches, API contracts, sequence of operations, error handling. Reference concrete file paths from the scope. Keep it",
+            "model": "mock"
+          },
+          "tool_output": null
+        }
+      },
+      "output": {
+        "agent_output": {
+          "agent": "fe_dev",
+          "role": "Frontend Developer",
+          "summary": "[mock] You are the Frontend Developer (fe_dev) in a multi-agent workflow.\n[mock] task: Produce a frontend implementation plan: components, state, API calls, routing, copy. List files to create / modify. Do NOT write code \u2014 produce the plan a devel",
+          "model": "mock"
+        },
+        "tool_output": null
+      },
+      "status": "success",
+      "attempts": 1,
+      "max_retries": 2,
+      "retry_backoff_sec": 0.5,
+      "error": null,
+      "started_at": "2026-06-05T04:49:51.222530+00:00",
+      "finished_at": "2026-06-05T04:49:51.222530+00:00"
+    },
+    {
+      "id": "step_6218f2f39304",
+      "name": "migration_audit",
+      "agent": "architect",
+      "tool": null,
+      "instruction": "Migration logic-parity audit. For each behavior of the SOURCE side (`migrate_from`), state the equivalent behavior on the TARGET side (`migrate_to`). Output a table with columns: behavior, source impl, target impl, status (preserved / changed / dropped), risk. Flag any silent behavior change as HIGH risk.",
+      "inputs": {
+        "intake": {
+          "agent_output": {
+            "agent": "ba",
+            "role": "Business Analyst",
+            "summary": "[mock] You are the Business Analyst (ba) in a multi-agent workflow.\n[mock] task: Read the task brief in `task_brief`. Restate it as a tight problem statement: goal, in-scope, out-of-scope, acceptance criteria. If the brief came from a Jira t",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "scope": {
+          "agent_output": {
+            "agent": "sa",
+            "role": "Solution Architect",
+            "summary": "[mock] You are the Solution Architect (sa) in a multi-agent workflow.\n[mock] task: Using the intake summary and the `source_scan` snapshot of the target repository, list the files / modules / services this change is likely to touch. Group them",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "rationale": {
+          "agent_output": {
+            "agent": "architect",
+            "role": "Software Architect",
+            "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Draft the change-rationale document that will live at `docs/changes/<date>-<slug>.md` in the source repo. Sections required: 1) Why \u2014 business + technical motiv",
+            "model": "mock"
+          },
+          "tool_output": {
+            "tool": "write_rationale",
+            "path": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo\\docs\\changes\\2026-06-05-migrate-auth-from-node-service-to-go.md",
+            "bytes_written": 95
+          }
+        },
+        "architecture": {
+          "agent_output": {
+            "agent": "architect",
+            "role": "Software Architect",
+            "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Lay out the technical approach: data model touches, API contracts, sequence of operations, error handling. Reference concrete file paths from the scope. Keep it",
+            "model": "mock"
+          },
+          "tool_output": null
+        }
+      },
+      "output": {
+        "agent_output": {
+          "agent": "architect",
+          "role": "Software Architect",
+          "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Migration logic-parity audit. For each behavior of the SOURCE side (`migrate_from`), state the equivalent behavior on the TARGET side (`migrate_to`). Output a t",
+          "model": "mock"
+        },
+        "tool_output": null
+      },
+      "status": "success",
+      "attempts": 1,
+      "max_retries": 2,
+      "retry_backoff_sec": 0.5,
+      "error": null,
+      "started_at": "2026-06-05T04:49:51.222530+00:00",
+      "finished_at": "2026-06-05T04:49:51.222530+00:00"
+    },
+    {
+      "id": "step_27e5b6a713fb",
+      "name": "test_plan",
+      "agent": "tester",
+      "tool": null,
+      "instruction": "Test strategy for the change. Unit, integration, e2e \u2014 call out which layers each touches. List the regression risks (especially for migrations: golden-output tests that pin current behavior of the SOURCE side, then run against TARGET).",
+      "inputs": {
+        "architecture": {
+          "agent_output": {
+            "agent": "architect",
+            "role": "Software Architect",
+            "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Lay out the technical approach: data model touches, API contracts, sequence of operations, error handling. Reference concrete file paths from the scope. Keep it",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "backend_plan": {
+          "agent_output": {
+            "agent": "be_dev",
+            "role": "Backend Developer",
+            "summary": "[mock] You are the Backend Developer (be_dev) in a multi-agent workflow.\n[mock] task: Produce a backend implementation plan: list of files to create / modify, function signatures, db migrations, external calls. Do NOT write code \u2014 produce the pla",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "frontend_plan": {
+          "agent_output": {
+            "agent": "fe_dev",
+            "role": "Frontend Developer",
+            "summary": "[mock] You are the Frontend Developer (fe_dev) in a multi-agent workflow.\n[mock] task: Produce a frontend implementation plan: components, state, API calls, routing, copy. List files to create / modify. Do NOT write code \u2014 produce the plan a devel",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "migration_audit": {
+          "agent_output": {
+            "agent": "architect",
+            "role": "Software Architect",
+            "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Migration logic-parity audit. For each behavior of the SOURCE side (`migrate_from`), state the equivalent behavior on the TARGET side (`migrate_to`). Output a t",
+            "model": "mock"
+          },
+          "tool_output": null
+        }
+      },
+      "output": {
+        "agent_output": {
+          "agent": "tester",
+          "role": "QA / Tester",
+          "summary": "[mock] You are the QA / Tester (tester) in a multi-agent workflow.\n[mock] task: Test strategy for the change. Unit, integration, e2e \u2014 call out which layers each touches. List the regression risks (especially for migrations: golden-output t",
+          "model": "mock"
+        },
+        "tool_output": null
+      },
+      "status": "success",
+      "attempts": 1,
+      "max_retries": 2,
+      "retry_backoff_sec": 0.5,
+      "error": null,
+      "started_at": "2026-06-05T04:49:51.222530+00:00",
+      "finished_at": "2026-06-05T04:49:51.222530+00:00"
+    },
+    {
+      "id": "step_c8c1d22ea555",
+      "name": "review",
+      "agent": "reviewer",
+      "tool": null,
+      "instruction": "Final review pass over the full plan. Surface unresolved questions, missing test coverage, and anything the rationale doc didn't justify. Output a numbered risk list, highest first.",
+      "inputs": {
+        "rationale": {
+          "agent_output": {
+            "agent": "architect",
+            "role": "Software Architect",
+            "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Draft the change-rationale document that will live at `docs/changes/<date>-<slug>.md` in the source repo. Sections required: 1) Why \u2014 business + technical motiv",
+            "model": "mock"
+          },
+          "tool_output": {
+            "tool": "write_rationale",
+            "path": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo\\docs\\changes\\2026-06-05-migrate-auth-from-node-service-to-go.md",
+            "bytes_written": 95
+          }
+        },
+        "architecture": {
+          "agent_output": {
+            "agent": "architect",
+            "role": "Software Architect",
+            "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Lay out the technical approach: data model touches, API contracts, sequence of operations, error handling. Reference concrete file paths from the scope. Keep it",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "backend_plan": {
+          "agent_output": {
+            "agent": "be_dev",
+            "role": "Backend Developer",
+            "summary": "[mock] You are the Backend Developer (be_dev) in a multi-agent workflow.\n[mock] task: Produce a backend implementation plan: list of files to create / modify, function signatures, db migrations, external calls. Do NOT write code \u2014 produce the pla",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "frontend_plan": {
+          "agent_output": {
+            "agent": "fe_dev",
+            "role": "Frontend Developer",
+            "summary": "[mock] You are the Frontend Developer (fe_dev) in a multi-agent workflow.\n[mock] task: Produce a frontend implementation plan: components, state, API calls, routing, copy. List files to create / modify. Do NOT write code \u2014 produce the plan a devel",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "migration_audit": {
+          "agent_output": {
+            "agent": "architect",
+            "role": "Software Architect",
+            "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Migration logic-parity audit. For each behavior of the SOURCE side (`migrate_from`), state the equivalent behavior on the TARGET side (`migrate_to`). Output a t",
+            "model": "mock"
+          },
+          "tool_output": null
+        },
+        "test_plan": {
+          "agent_output": {
+            "agent": "tester",
+            "role": "QA / Tester",
+            "summary": "[mock] You are the QA / Tester (tester) in a multi-agent workflow.\n[mock] task: Test strategy for the change. Unit, integration, e2e \u2014 call out which layers each touches. List the regression risks (especially for migrations: golden-output t",
+            "model": "mock"
+          },
+          "tool_output": null
+        }
+      },
+      "output": {
+        "agent_output": {
+          "agent": "reviewer",
+          "role": "Code Reviewer",
+          "summary": "[mock] You are the Code Reviewer (reviewer) in a multi-agent workflow.\n[mock] task: Final review pass over the full plan. Surface unresolved questions, missing test coverage, and anything the rationale doc didn't justify. Output a numbered risk",
+          "model": "mock"
+        },
+        "tool_output": null
+      },
+      "status": "success",
+      "attempts": 1,
+      "max_retries": 2,
+      "retry_backoff_sec": 0.5,
+      "error": null,
+      "started_at": "2026-06-05T04:49:51.222530+00:00",
+      "finished_at": "2026-06-05T04:49:51.222530+00:00"
+    }
+  ],
+  "current_step_idx": 10,
+  "status": "completed",
+  "context": {
+    "task_brief": {
+      "description": "Migrate auth from Node service to Go",
+      "jira_id": null,
+      "source_dir": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo",
+      "task_type": "migration",
+      "migrate_from": "node-auth",
+      "migrate_to": "go-auth",
+      "branch_name": "migration/migrate-auth-from-node-service-to-go",
+      "slug": "migrate-auth-from-node-service-to-go",
+      "submitted_at": "2026-06-05T04:49:51+00:00"
+    },
+    "source_scan": {
+      "kind": "directory",
+      "path": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo",
+      "file_count": 2,
+      "total_bytes": 265,
+      "languages": {
+        "Markdown": 2
+      },
+      "files": [
+        "README.md",
+        "docs\\changes\\2026-06-05-add-csv-export-to-reports-page.md"
+      ],
+      "truncated": false
+    },
+    "intake": {
+      "agent_output": {
+        "agent": "ba",
+        "role": "Business Analyst",
+        "summary": "[mock] You are the Business Analyst (ba) in a multi-agent workflow.\n[mock] task: Read the task brief in `task_brief`. Restate it as a tight problem statement: goal, in-scope, out-of-scope, acceptance criteria. If the brief came from a Jira t",
+        "model": "mock"
+      },
+      "tool_output": null
+    },
+    "scope": {
+      "agent_output": {
+        "agent": "sa",
+        "role": "Solution Architect",
+        "summary": "[mock] You are the Solution Architect (sa) in a multi-agent workflow.\n[mock] task: Using the intake summary and the `source_scan` snapshot of the target repository, list the files / modules / services this change is likely to touch. Group them",
+        "model": "mock"
+      },
+      "tool_output": null
+    },
+    "branch": {
+      "agent_output": {
+        "agent": "pm",
+        "role": "Project Manager",
+        "summary": "[mock] You are the Project Manager (pm) in a multi-agent workflow.\n[mock] task: Create a feature branch in the source repo. Name it from the task slug, prefixed by the task_type (feature/, migration/, bugfix/). The tool handles the actual `",
+        "model": "mock"
+      },
+      "tool_output": {
+        "tool": "git_branch",
+        "source_dir": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo",
+        "branch": "migration/migrate-auth-from-node-service-to-go",
+        "base_branch": "(current HEAD)",
+        "action": "created",
+        "head_commit": "6337af227ca77de6bea7a16ad15c4a38e16b1c3d"
+      }
+    },
+    "rationale": {
+      "agent_output": {
+        "agent": "architect",
+        "role": "Software Architect",
+        "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Draft the change-rationale document that will live at `docs/changes/<date>-<slug>.md` in the source repo. Sections required: 1) Why \u2014 business + technical motiv",
+        "model": "mock"
+      },
+      "tool_output": {
+        "tool": "write_rationale",
+        "path": "F:\\03_POC_PROJECTS\\claude\\.smoketest\\sandbox-repo\\docs\\changes\\2026-06-05-migrate-auth-from-node-service-to-go.md",
+        "bytes_written": 95
+      }
+    },
+    "architecture": {
+      "agent_output": {
+        "agent": "architect",
+        "role": "Software Architect",
+        "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Lay out the technical approach: data model touches, API contracts, sequence of operations, error handling. Reference concrete file paths from the scope. Keep it",
+        "model": "mock"
+      },
+      "tool_output": null
+    },
+    "backend_plan": {
+      "agent_output": {
+        "agent": "be_dev",
+        "role": "Backend Developer",
+        "summary": "[mock] You are the Backend Developer (be_dev) in a multi-agent workflow.\n[mock] task: Produce a backend implementation plan: list of files to create / modify, function signatures, db migrations, external calls. Do NOT write code \u2014 produce the pla",
+        "model": "mock"
+      },
+      "tool_output": null
+    },
+    "frontend_plan": {
+      "agent_output": {
+        "agent": "fe_dev",
+        "role": "Frontend Developer",
+        "summary": "[mock] You are the Frontend Developer (fe_dev) in a multi-agent workflow.\n[mock] task: Produce a frontend implementation plan: components, state, API calls, routing, copy. List files to create / modify. Do NOT write code \u2014 produce the plan a devel",
+        "model": "mock"
+      },
+      "tool_output": null
+    },
+    "migration_audit": {
+      "agent_output": {
+        "agent": "architect",
+        "role": "Software Architect",
+        "summary": "[mock] You are the Software Architect (architect) in a multi-agent workflow.\n[mock] task: Migration logic-parity audit. For each behavior of the SOURCE side (`migrate_from`), state the equivalent behavior on the TARGET side (`migrate_to`). Output a t",
+        "model": "mock"
+      },
+      "tool_output": null
+    },
+    "test_plan": {
+      "agent_output": {
+        "agent": "tester",
+        "role": "QA / Tester",
+        "summary": "[mock] You are the QA / Tester (tester) in a multi-agent workflow.\n[mock] task: Test strategy for the change. Unit, integration, e2e \u2014 call out which layers each touches. List the regression risks (especially for migrations: golden-output t",
+        "model": "mock"
+      },
+      "tool_output": null
+    },
+    "review": {
+      "agent_output": {
+        "agent": "reviewer",
+        "role": "Code Reviewer",
+        "summary": "[mock] You are the Code Reviewer (reviewer) in a multi-agent workflow.\n[mock] task: Final review pass over the full plan. Surface unresolved questions, missing test coverage, and anything the rationale doc didn't justify. Output a numbered risk",
+        "model": "mock"
+      },
+      "tool_output": null
+    }
+  },
+  "created_at": "2026-06-05T04:49:51.104007+00:00",
+  "updated_at": "2026-06-05T04:49:51.222530+00:00"
+}
