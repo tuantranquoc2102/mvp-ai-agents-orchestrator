@@ -1,9 +1,0 @@
-# Report
-
-_Agent: `assistant` (General Assistant)_  
-_Status: `success` · attempts: 1_
-
----
-
-[mock] You are the General Assistant (assistant) in a multi-agent workflow.
-[mock] task: SCOPE — focus exclusively on the feature `FileCheckpointStore`. The `codebase_scan` input is already pre-filtered to files that reference this feature; do NOT d
